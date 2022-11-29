@@ -32,47 +32,47 @@ Vous pouvez utiliser ce [GSheets](https://docs.google.com/spreadsheets/d/13Hw27U
 - **Après** TEMPS
 
 
-#### Amélioration de la méthode `METHOD` et donc de la méthode `METHOD` :
+#### Amélioration de la méthode `getMeta` et donc de la méthode `getMetas` :
 
-- **Avant** TEMPS
+- **Avant** 3.10s
 
 ```sql
--- REQ SQL DE BASE
+SELECT * FROM wp_usermeta
 ```
 
-- **Après** TEMPS
+- **Après** 1.62s
 
 ```sql
--- NOUVELLE REQ SQL
-```
-
-
-
-#### Amélioration de la méthode `METHOD` :
-
-- **Avant** TEMPS
-
-```sql
--- REQ SQL DE BASE
-```
-
-- **Après** TEMPS
-
-```sql
--- NOUVELLE REQ SQL
+SELECT * FROM wp_usermeta WHERE user_id=:userId and meta_key=:key
 ```
 
 
 
-#### Amélioration de la méthode `METHOD` :
+#### Amélioration de la méthode `getReviews` :
 
-- **Avant** TEMPS
+- **Avant** 9.27s
 
 ```sql
--- REQ SQL DE BASE
+SELECT * FROM wp_posts, wp_postmeta WHERE wp_posts.post_author = :hotelId AND wp_posts.ID = wp_postmeta.post_id AND meta_key = 'rating' AND post_type = 'review'
 ```
 
-- **Après** TEMPS
+- **Après** 7.66s
+
+```sql
+SELECT count(meta_value), AVG(meta_value) FROM wp_posts, wp_postmeta WHERE wp_posts.post_author = :hotelId AND wp_posts.ID = wp_postmeta.post_id AND meta_key = 'rating' AND post_type = 'review'
+```
+
+
+
+#### Amélioration de la méthode `getCheapestRoom` :
+
+- **Avant** 17.43s
+
+```sql
+SELECT * FROM wp_posts WHERE post_author = :hotelId AND post_type = 'room'
+```
+
+- **Après** 13.82s
 
 ```sql
 -- NOUVELLE REQ SQL
