@@ -138,8 +138,9 @@ class UnoptimizedHotelService extends AbstractHotelService {
       $timer = Timers::getInstance();
       $timerId = $timer->startTimer('getCHEAPESTROOM');
       $whereClause = [];
+
       if ( isset( $args['surface']['min'] )  )
-        $whereClause[] = 'surfaceData.meta_key >= ' . $args['surface']['min'];
+        $whereClause[] = 'surfaceData.meta_value >= ' . $args['surface']['min'];
 
 
       if ( isset( $args['surface']['max'] )  )
@@ -153,16 +154,16 @@ class UnoptimizedHotelService extends AbstractHotelService {
         $whereClause[] = 'priceData.meta_value <= ' . $args['price']['max'];
 
       if ( isset( $args['rooms'] )  )
-        $whereClause[] = 'roomsData.meta_value  = ' . $args['rooms'];
+        $whereClause[] = 'roomsData.meta_value  >= ' . $args['rooms'];
 
       if ( isset( $args['bathRooms'] ) )
-        $whereClause[] = 'bathRoomsData.meta_value = ' . $args['bathRooms'];
+        $whereClause[] = 'bathRoomsData.meta_value >= ' . $args['bathRooms'];
 
       if ( isset( $args['types'] ) && ! empty( $args['types'] )  )
-        $whereClause[] = 'typeData.meta_value IN ("' . implode( ',', $args['types'] ) . '")';
+        $whereClause[] = 'typeData.meta_value IN ("' . implode( '","', $args['types'] ) . '")';
 
     $stmt = $this->getDB()->prepare( "SELECT * FROM wp_posts 
-    INNER JOIN wp_postmeta as surfaceData ON surfaceData.post_id = wp_posts.ID AND surfaceData.meta_key = 'surface'
+    INNER JOIN wp_postmeta as surfaceData ON surfaceData.post_id = wp_posts.ID AND surfaceData.meta_key = 'surface' 
     INNER JOIN wp_postmeta as priceData ON priceData.post_id = wp_posts.ID AND priceData.meta_key = 'price'
     INNER JOIN wp_postmeta as roomsData ON roomsData.post_id = wp_posts.ID AND roomsData.meta_key = 'bedrooms_count' 
     INNER JOIN wp_postmeta as bathRoomsData ON bathRoomsData.post_id = wp_posts.ID AND bathRoomsData.meta_key = 'bathrooms_count'
