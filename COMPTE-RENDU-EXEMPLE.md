@@ -86,12 +86,12 @@ WHERE post_author = '200' AND post_type = 'room' AND surfaceData.meta_value >= 1
 
 
 
-## Question 5 : Réduction du nombre de requêtes SQL pour `METHOD`
+## Question 5 : Réduction du nombre de requêtes SQL pour `GET_METAS`
 
 |                              | **Avant** | **Après** |
 |------------------------------|-----------|-----------|
-| Nombre d'appels de `getDB()` | NOMBRE    | NOMBRE    |
- | Temps de `METHOD`            | TEMPS     | TEMPS     |
+| Nombre d'appels de `getDB()` | 2201      | 601       |
+ | Temps de `GET_METAS`         | 1.54      | 1.38s     |
 
 ## Question 6 : Création d'un service basé sur une seule requête SQL
 

@@ -40,26 +40,7 @@ class UnoptimizedHotelService extends AbstractHotelService {
   }
   
   
-  /**
-   * Récupère une méta-donnée de l'instance donnée
-   *
-   * @param int    $userId
-   * @param string $key
-   *
-   * @return string|null
-   */
-  protected function getMeta ( int $userId, string $key ) : ?string {
-      $timer = Timers::getInstance();
-      $timerId = $timer->startTimer('getMeta');
-      $db = $this->getDB();
-    $stmt = $db->prepare( "SELECT meta_value FROM wp_usermeta WHERE user_id=:userId and meta_key=:key" );
-    $stmt->execute( [ 'userId' => $userId, 'key' => $key ] );
-    $output = $stmt->fetchAll( PDO::FETCH_ASSOC );
-    $timer->endTimer('getMeta', $timerId);
-    return $output[0]['meta_value'] ;
-  }
-  
-  
+
   /**
    * Récupère toutes les meta données de l'instance donnée
    *
@@ -71,18 +52,32 @@ class UnoptimizedHotelService extends AbstractHotelService {
   protected function getMetas ( HotelEntity $hotel ) : array {
     $timer = Timers::getInstance();
     $timerId = $timer->startTimer('getMETAS');
+    $SQLQuery = " SELECT address_1.meta_value AS 'address1', address_2.meta_value AS 'address2', address_city.meta_value AS 'addressCity', address_zip.meta_value  AS 'addressZIP', address_country.meta_value AS 'addressCountry' , geo_lat.meta_value AS 'geoLat', geo_lng.meta_value AS 'geoLng', coverImage.meta_value AS 'covImg', phone.meta_value AS 'Phonee' ";
+    $SQLQuery .= " FROM wp_users INNER JOIN wp_usermeta as address_1 ON wp_users.ID =  address_1.user_id AND address_1.meta_key = 'address_1' ";
+    $SQLQuery .= " INNER JOIN wp_usermeta as address_2 ON wp_users.ID = address_2.user_id AND address_2.meta_key = 'address_2' ";
+    $SQLQuery .= " INNER JOIN wp_usermeta as address_city ON wp_users.ID = address_city.user_id AND address_city.meta_key = 'address_city' ";
+    $SQLQuery .= " INNER JOIN wp_usermeta as address_zip ON wp_users.ID =  address_zip.user_id AND  address_zip.meta_key = 'address_zip' ";
+    $SQLQuery .= " INNER JOIN wp_usermeta as address_country ON wp_users.ID = address_country.user_id AND address_country.meta_key = 'address_country' ";
+    $SQLQuery .= " INNER JOIN wp_usermeta as geo_lat ON wp_users.ID = geo_lat.user_id AND geo_lat.meta_key = 'geo_lat' ";
+    $SQLQuery .= " INNER JOIN wp_usermeta as geo_lng ON wp_users.ID =geo_lng.user_id AND geo_lng.meta_key = 'geo_lng' ";
+    $SQLQuery .= " INNER JOIN wp_usermeta as coverImage ON wp_users.ID = coverImage.user_id AND coverImage.meta_key = 'coverImage' ";
+    $SQLQuery .= " INNER JOIN wp_usermeta as phone ON wp_users.ID = phone.user_id AND phone.meta_key = 'phone' ";
+    $SQLQuery .= " WHERE wp_users.ID = :id ";
+      $stmt = $this->getDB()->prepare( $SQLQuery );
+      $stmt->execute( [ 'id' => $hotel->getId() ] );
+      $output = $stmt->fetchAll( PDO::FETCH_ASSOC );
     $metaDatas = [
       'address' => [
-        'address_1' => $this->getMeta( $hotel->getId(), 'address_1' ),
-        'address_2' => $this->getMeta( $hotel->getId(), 'address_2' ),
-        'address_city' => $this->getMeta( $hotel->getId(), 'address_city' ),
-        'address_zip' => $this->getMeta( $hotel->getId(), 'address_zip' ),
-        'address_country' => $this->getMeta( $hotel->getId(), 'address_country' ),
+        'address_1' => $output[0]['address1'],
+        'address_2' => $output[0]['address2'],
+        'address_city' => $output[0]['addressCity'],
+        'address_zip' => $output[0]['addressZIP'],
+        'address_country' => $output[0]['addressCountry'],
       ],
-      'geo_lat' =>  $this->getMeta( $hotel->getId(), 'geo_lat' ),
-      'geo_lng' =>  $this->getMeta( $hotel->getId(), 'geo_lng' ),
-      'coverImage' =>  $this->getMeta( $hotel->getId(), 'coverImage' ),
-      'phone' =>  $this->getMeta( $hotel->getId(), 'phone' ),
+      'geo_lat' => $output[0]['geoLat'],
+      'geo_lng' => $output[0]['geoLng'],
+      'coverImage' =>  $output[0]['covImg'],
+      'phone' =>  $output[0]['Phonee'],
     ];
     $timer->endTimer('getMETAS', $timerId);
     return $metaDatas;
