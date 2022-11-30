@@ -103,8 +103,69 @@ WHERE post_author = '200' AND post_type = 'room' AND surfaceData.meta_value >= 1
 **Requête SQL**
 
 ```SQL
--- GIGA REQUÊTE
--- INDENTATION PROPRE ET COMMENTAIRES SERONT APPRÉCIÉS MERCI !
+SELECT
+ user.ID AS hotelId,
+ user.display_name AS hotelName,
+ address_1Data.meta_value       as hotel_address_1,
+ address_2Data.meta_value       as hotel_address_2,
+ address_cityData.meta_value    as hotel_address_city,
+ address_zipData.meta_value     as hotel_address_zip,
+ address_countryData.meta_value as hotel_address_country,
+ postData.ID AS cheapestRoomId,
+ postData.price AS price,
+ postData.surface AS surface,
+ postData.bedroom AS bedroom,
+ postData.bathroom as bathroom,
+ postData.type as type,
+ COUNT(reviewData.meta_value)   as reviewCount,
+ AVG(reviewData.meta_value)     as reviewMoy
+FROM
+ wp_users AS USER
+
+  INNER JOIN wp_usermeta as address_1Data       ON address_1Data.user_id       = USER.ID     AND address_1Data.meta_key       = 'address_1'
+  INNER JOIN wp_usermeta as address_2Data       ON address_2Data.user_id       = USER.ID     AND address_2Data.meta_key       = 'address_2'
+  INNER JOIN wp_usermeta as address_cityData    ON address_cityData.user_id    = USER.ID     AND address_cityData.meta_key    = 'address_city'
+  INNER JOIN wp_usermeta as address_zipData     ON address_zipData.user_id     = USER.ID     AND address_zipData.meta_key     = 'address_zip'
+  INNER JOIN wp_usermeta as address_countryData ON address_countryData.user_id = USER.ID     AND address_countryData.meta_key = 'address_country'
+  INNER JOIN wp_usermeta as geo_latData         ON geo_latData.user_id         = USER.ID     AND geo_latData.meta_key         = 'geo_lat'
+  INNER JOIN wp_usermeta as geo_lngData         ON geo_lngData.user_id         = USER.ID     AND geo_lngData.meta_key         = 'geo_lng'
+  INNER JOIN wp_usermeta as coverImageData      ON coverImageData.user_id      = USER.ID     AND coverImageData.meta_key      = 'coverImage'
+  INNER JOIN wp_usermeta as phoneData           ON phoneData.user_id           = USER.ID     AND phoneData.meta_key           = 'phone'
+  INNER JOIN wp_posts    as rating_postData     ON rating_postData.post_author = USER.ID     AND rating_postData.post_type    = 'review'
+  INNER JOIN wp_postmeta as reviewData          ON reviewData.post_id = rating_postData.ID   AND reviewData.meta_key          = 'rating'
+
+  -- room
+  INNER JOIN (
+  SELECT
+   post.ID,
+   post.post_author,
+   MIN(CAST(priceData.meta_value AS UNSIGNED)) AS price,
+   CAST(surfaceData.meta_value  AS UNSIGNED) AS surface,
+   CAST(roomsData.meta_value AS UNSIGNED) AS bedroom,
+   CAST(bathRoomsData.meta_value AS UNSIGNED) AS bathroom,
+   typeData.meta_value   AS type
+
+
+  FROM
+   tp.wp_posts AS post
+    -- price
+    INNER JOIN tp.wp_postmeta AS priceData ON post.ID = priceData.post_id
+    AND priceData.meta_key = 'price'
+    INNER JOIN wp_postmeta as surfaceData ON surfaceData.post_id = post.ID AND surfaceData.meta_key = 'surface'
+    INNER JOIN wp_postmeta as roomsData ON roomsData.post_id = post.ID AND roomsData.meta_key = 'bedrooms_count'
+    INNER JOIN wp_postmeta as bathRoomsData ON bathRoomsData.post_id = post.ID AND bathRoomsData.meta_key = 'bathrooms_count'
+    INNER JOIN wp_postmeta as typeData ON typeData.post_id = post.ID AND typeData.meta_key = 'type'
+  WHERE
+   post.post_type = 'room'
+  GROUP BY
+   post.post_author
+ ) AS postData ON user.ID = postData.post_author
+
+WHERE
+ -- On peut déjà filtrer vu que valeur est déjà castée en numérique
+ price < 100
+
+LIMIT 3;
 ```
 
 ## Question 7 : ajout d'indexes SQL
