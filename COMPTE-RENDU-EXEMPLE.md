@@ -97,94 +97,108 @@ WHERE post_author = '200' AND post_type = 'room' AND surfaceData.meta_value >= 1
 
 |                              | **Avant** | **Après** |
 |------------------------------|-----------|-----------|
-| Nombre d'appels de `getDB()` | NOMBRE    | NOMBRE    |
-| Temps de chargement global   | TEMPS     | TEMPS     |
+| Nombre d'appels de `getDB()` | 601       | 1         |
+| Temps de chargement global   | 21.5s     | 3.77s     |
 
 **Requête SQL**
 
 ```SQL
 SELECT
- user.ID AS hotelId,
- user.display_name AS hotelName,
- address_1Data.meta_value       as hotel_address_1,
- address_2Data.meta_value       as hotel_address_2,
- address_cityData.meta_value    as hotel_address_city,
- address_zipData.meta_value     as hotel_address_zip,
- address_countryData.meta_value as hotel_address_country,
- postData.ID AS cheapestRoomId,
- postData.price AS price,
- postData.surface AS surface,
- postData.bedroom AS bedroom,
- postData.bathroom as bathroom,
- postData.type as type,
- COUNT(reviewData.meta_value)   as reviewCount,
- AVG(reviewData.meta_value)     as reviewMoy
+     user.ID as hotelId,
+     user.display_name as hotelName,
+     address_1Data.meta_value       as hotel_address_1,
+     address_2Data.meta_value       as hotel_address_2,
+     address_cityData.meta_value    as hotel_address_city,
+     address_zipData.meta_value     as hotel_address_zip,
+     address_countryData.meta_value as hotel_address_country,
+     postData.ID as cheapestRoomId,
+     postData.price as price,
+     postData.surface as surface,
+     postData.bedroom as bedroom,
+     postData.bathroom as bathroom,
+     postData.post_title as title,
+     postData.coverImage as room_image_url,
+     postData.type as type,
+     COUNT(reviewData.meta_value)   as reviewCount,
+     AVG(reviewData.meta_value)     as reviewMoy,
+     geo_latData.meta_value        as geo_lat,
+     geo_lngData .meta_value        as geo_lng,
+     coverImageData.meta_value      as hotel_image_url,
+     phoneData.meta_value           as hotel_phone
+
 FROM
  wp_users AS USER
-
-  INNER JOIN wp_usermeta as address_1Data       ON address_1Data.user_id       = USER.ID     AND address_1Data.meta_key       = 'address_1'
- INNER JOIN wp_usermeta as address_2Data       ON address_2Data.user_id       = USER.ID     AND address_2Data.meta_key       = 'address_2'
- INNER JOIN wp_usermeta as address_cityData    ON address_cityData.user_id    = USER.ID     AND address_cityData.meta_key    = 'address_city'
- INNER JOIN wp_usermeta as address_zipData     ON address_zipData.user_id     = USER.ID     AND address_zipData.meta_key     = 'address_zip'
- INNER JOIN wp_usermeta as address_countryData ON address_countryData.user_id = USER.ID     AND address_countryData.meta_key = 'address_country'
- INNER JOIN wp_usermeta as geo_latData         ON geo_latData.user_id         = USER.ID     AND geo_latData.meta_key         = 'geo_lat'
- INNER JOIN wp_usermeta as geo_lngData         ON geo_lngData.user_id         = USER.ID     AND geo_lngData.meta_key         = 'geo_lng'
- INNER JOIN wp_usermeta as coverImageData      ON coverImageData.user_id      = USER.ID     AND coverImageData.meta_key      = 'coverImage'
- INNER JOIN wp_usermeta as phoneData           ON phoneData.user_id           = USER.ID     AND phoneData.meta_key           = 'phone'
- INNER JOIN wp_posts    as rating_postData     ON rating_postData.post_author = USER.ID     AND rating_postData.post_type    = 'review'
- INNER JOIN wp_postmeta as reviewData          ON reviewData.post_id = rating_postData.ID   AND reviewData.meta_key          = 'rating'
+        
+         INNER JOIN wp_usermeta as address_1Data       ON address_1Data.user_id       = USER.ID     AND address_1Data.meta_key       = 'address_1'
+         INNER JOIN wp_usermeta as address_2Data       ON address_2Data.user_id       = USER.ID     AND address_2Data.meta_key       = 'address_2'
+         INNER JOIN wp_usermeta as address_cityData    ON address_cityData.user_id    = USER.ID     AND address_cityData.meta_key    = 'address_city'
+         INNER JOIN wp_usermeta as address_zipData     ON address_zipData.user_id     = USER.ID     AND address_zipData.meta_key     = 'address_zip'
+         INNER JOIN wp_usermeta as address_countryData ON address_countryData.user_id = USER.ID     AND address_countryData.meta_key = 'address_country'
+         INNER JOIN wp_usermeta as geo_latData         ON geo_latData.user_id         = USER.ID     AND geo_latData.meta_key         = 'geo_lat'
+         INNER JOIN wp_usermeta as geo_lngData         ON geo_lngData.user_id         = USER.ID     AND geo_lngData.meta_key         = 'geo_lng'
+         INNER JOIN wp_usermeta as coverImageData      ON coverImageData.user_id      = USER.ID     AND coverImageData.meta_key      = 'coverImage'
+         INNER JOIN wp_usermeta as phoneData           ON phoneData.user_id           = USER.ID     AND phoneData.meta_key           = 'phone'
+         INNER JOIN wp_posts    as rating_postData     ON rating_postData.post_author = USER.ID     AND rating_postData.post_type    = 'review'
+         INNER JOIN wp_postmeta as reviewData          ON reviewData.post_id = rating_postData.ID   AND reviewData.meta_key          = 'rating'
 
  -- room
  INNER JOIN (
- SELECT
- post.ID,
- post.post_author,
- MIN(CAST(priceData.meta_value AS UNSIGNED)) AS price,
- CAST(surfaceData.meta_value  AS UNSIGNED) AS surface,
- CAST(roomsData.meta_value AS UNSIGNED) AS bedroom,
- CAST(bathRoomsData.meta_value AS UNSIGNED) AS bathroom,
- typeData.meta_value   AS type
+       SELECT
+       post.ID,
+       post.post_author,
+       post.post_title,
+       MIN(CAST(priceData.meta_value AS UNSIGNED)) AS price,
+       CAST(surfaceData.meta_value  AS UNSIGNED) AS surface,
+       CAST(roomsData.meta_value AS UNSIGNED) AS bedroom,
+       CAST(bathRoomsData.meta_value AS UNSIGNED) AS bathroom,
+       img_meta.meta_value       as coverImage,
+       typeData.meta_value   AS type
 
 
- FROM
- tp.wp_posts AS post
- -- price
- INNER JOIN tp.wp_postmeta AS priceData ON post.ID = priceData.post_id
- AND priceData.meta_key = 'price'
- INNER JOIN wp_postmeta as surfaceData ON surfaceData.post_id = post.ID AND surfaceData.meta_key = 'surface'
- INNER JOIN wp_postmeta as roomsData ON roomsData.post_id = post.ID AND roomsData.meta_key = 'bedrooms_count'
- INNER JOIN wp_postmeta as bathRoomsData ON bathRoomsData.post_id = post.ID AND bathRoomsData.meta_key = 'bathrooms_count'
- INNER JOIN wp_postmeta as typeData ON typeData.post_id = post.ID AND typeData.meta_key = 'type'
- WHERE
- post.post_type = 'room'
- GROUP BY
- post.post_author
- ) AS postData ON user.ID = postData.post_author
-
-WHERE
- -- On peut déjà filtrer vu que valeur est déjà castée en numérique
- price >= 100
-GROUP BY user.ID;
+        FROM tp.wp_posts AS post
+          INNER JOIN tp.wp_postmeta AS priceData ON post.ID = priceData.post_id
+          AND priceData.meta_key = 'price'
+          INNER JOIN wp_postmeta as surfaceData ON surfaceData.post_id = post.ID AND surfaceData.meta_key = 'surface'
+          INNER JOIN wp_postmeta as roomsData ON roomsData.post_id = post.ID AND roomsData.meta_key = 'bedrooms_count'
+          INNER JOIN wp_postmeta as bathRoomsData ON bathRoomsData.post_id = post.ID AND bathRoomsData.meta_key = 'bathrooms_count'
+          INNER JOIN wp_postmeta as typeData ON typeData.post_id = post.ID AND typeData.meta_key = 'type'
+          INNER JOIN wp_postmeta as img_meta ON img_meta.post_id = post.ID AND img_meta.meta_key = 'coverImage'
+          WHERE
+        post.post_type = 'room' GROUP BY post.ID
+        ) AS postData ON user.ID = postData.post_author 
+        WHERE surface >= 130 AND surface <= 150 
+        AND price >= 200 AND price<= 230 
+        AND bedroom  >= 5 AND bathroom >= 5
+        AND
+        (111.111 * DEGREES(ACOS(LEAST(1.0, COS(RADIANS(CAST(geo_latData.meta_value AS DECIMAL(10, 6))))
+        * COS(RADIANS(CAST('46.988708' AS DECIMAL(10, 6))))
+        * COS(RADIANS(CAST( geo_lngData .meta_value  AS DECIMAL(10, 6)) - CAST('3.160778' AS DECIMAL(10, 6))))
+        + SIN(RADIANS(CAST(geo_latData.meta_value AS DECIMAL(10, 6))))
+        * SIN(RADIANS(CAST('46.988708' AS DECIMAL(10, 6))))))) <= CAST('30' AS DECIMAL(10, 6))) 
+        AND type IN ("Maison","Appartement") 
+        GROUP BY user.ID
 ```
 
 ## Question 7 : ajout d'indexes SQL
 
 **Indexes ajoutés**
 
-- `TABLE` : `COLONNES`
-- `TABLE` : `COLONNES`
-- `TABLE` : `COLONNES`
+- `wp_postmeta` : `post_id`
+- `wp_posts` : `post_author`
+- `wp_usermeta` : `user_id`
 
 **Requête SQL d'ajout des indexes** 
 
 ```sql
--- REQ SQL CREATION INDEXES
+-- ALTER TABLE `wp_postmeta` ADD INDEX(`post_id`);
+-- ALTER TABLE `wp_posts` ADD INDEX(`post_author`);
+-- ALTER TABLE `wp_usermeta` ADD INDEX(`user_id`);
 ```
 
 | Temps de chargement de la page | Sans filtre | Avec filtres |
 |--------------------------------|-------------|--------------|
-| `UnoptimizedService`           | TEMPS       | TEMPS        |
-| `OneRequestService`            | TEMPS       | TEMPS        |
+| `UnoptimizedService`           | 30s         | 1.27         |
+| `OneRequestService`            | 3.77s       | 1.07s        |
 [Filtres à utiliser pour mesurer le temps de chargement](http://localhost/?types%5B%5D=Maison&types%5B%5D=Appartement&price%5Bmin%5D=200&price%5Bmax%5D=230&surface%5Bmin%5D=130&surface%5Bmax%5D=150&rooms=5&bathRooms=5&lat=46.988708&lng=3.160778&search=Nevers&distance=30)
 
 
