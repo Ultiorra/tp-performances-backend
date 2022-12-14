@@ -8,6 +8,7 @@ use App\Common\SingletonTrait;
 use App\Entities\HotelEntity;
 use App\Entities\RoomEntity;
 use App\Services\Reviews\APIReviewsService;
+use App\Services\Reviews\CachedAPIReviewsService;
 use App\Services\Room\RoomService;
 use PDO;
 
@@ -16,7 +17,7 @@ class ReworkedHotelService extends OneRequestHotelService
 
 
     use SingletonTrait;
-    private readonly APIReviewsService $reviewService;
+    private readonly CachedAPIReviewsService $reviewService;
 
 
     public function list(array $args = []): array
@@ -44,7 +45,7 @@ class ReworkedHotelService extends OneRequestHotelService
     }
     protected function __construct () {
         parent::__construct( new RoomService() );
-        $this->reviewService = new APIReviewsService('http://cheap-trusted-reviews.fake/');
+        $this->reviewService = new CachedAPIReviewsService('http://cheap-trusted-reviews.fake/');
     }
 
     public function buildQuery(array $args = []): \PDOStatement
@@ -121,7 +122,7 @@ class ReworkedHotelService extends OneRequestHotelService
         $reviews = $this->reviewService->get($args['hotelId']);
         $hotel = parent::convertEntityFromArray( $args )
             ->setRating( (int) $reviews['data']['rating'] )
-            ->setRatingCount( (int) $reviews['data']['count'] );
+            ->setRatingCount( $reviews['data']['count'] );
         return $hotel;
 
     }

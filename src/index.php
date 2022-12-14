@@ -19,6 +19,5 @@ $hotelService = ReworkedHotelService::getInstance();
 
 //$hotelService = UnoptimizedHotelService::getInstance();
 
-Cache::get()->getItem('any_item');
 $controller = new HotelListController( $hotelService );
 $controller->render();
