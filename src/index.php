@@ -12,9 +12,9 @@ use App\Services\Hotel\UnoptimizedHotelService;
 require_once __DIR__ . "/vendor/autoload.php";
 
 
-$hotelService = OneRequestHotelService::getInstance();
+//$hotelService = OneRequestHotelService::getInstance();
 
-//$hotelService = ReworkedHotelService::getInstance();
+$hotelService = ReworkedHotelService::getInstance();
 
 //$hotelService = UnoptimizedHotelService::getInstance();
 $controller = new HotelListController( $hotelService );

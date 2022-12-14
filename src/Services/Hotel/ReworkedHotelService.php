@@ -7,20 +7,18 @@ use App\Common\PDOSingleton;
 use App\Common\SingletonTrait;
 use App\Entities\HotelEntity;
 use App\Entities\RoomEntity;
+use App\Services\Reviews\APIReviewsService;
 use App\Services\Room\RoomService;
 use PDO;
 
-class ReworkedHotelService extends AbstractHotelService
+class ReworkedHotelService extends OneRequestHotelService
 {
 
 
     use SingletonTrait;
+    private readonly APIReviewsService $reviewService;
 
-    public function getDB(): \PDO
-    {
-        $pdo = PDOSingleton::getInstance();
-        return $pdo;
-    }
+
     public function list(array $args = []): array
     {
         $stmt = $this->buildQuery($args);
@@ -46,6 +44,7 @@ class ReworkedHotelService extends AbstractHotelService
     }
     protected function __construct () {
         parent::__construct( new RoomService() );
+        $this->reviewService = new APIReviewsService('http://cheap-trusted-reviews.fake/');
     }
 
     public function buildQuery(array $args = []): \PDOStatement
@@ -102,8 +101,8 @@ class ReworkedHotelService extends AbstractHotelService
             AVG(reviews.review)    as reviewMoy,
             rooms.id               as cheapestRoomId,
             rooms.title            as title,
-            rooms.bathrooms        as bathrooms,
-            rooms.bedrooms         as bedrooms,
+            rooms.bathrooms        as bathroom,
+            rooms.bedrooms         as bedroom,
             rooms.image            as room_image_url,
             rooms.surface          as surface,
             rooms.type             as type,
@@ -119,35 +118,12 @@ class ReworkedHotelService extends AbstractHotelService
     }
     public function convertEntityFromArray(array $args): HotelEntity
     {
-        $hotel = new HotelEntity();
-        $hotel->setId($args['hotelId']);
-        $hotel->setName($args['hotelName']);
-        $hotel->setAddress([
-            'address_1' => $args['hotel_address_1'],
-            'address_2' => $args['hotel_address_2'],
-            'address_city' => $args['hotel_address_city'],
-            'address_zip' => $args['hotel_address_zip'],
-            'address_country' => $args['hotel_address_country'],
-        ]);
-        $hotel->setGeoLat($args['geo_lat']);
-        $hotel->setGeoLng($args['geo_lng']);
-        $hotel->setRatingCount($args['reviewCount']);
-        $hotel->setRating((int) $args['reviewMoy']);
-        $hotel->setImageUrl($args['hotel_image_url']);
-        $hotel->setPhone($args['hotel_phone']);
-        $hotel->setCheapestRoom(
-            (new RoomEntity())
-                ->setId($args['cheapestRoomId'])
-                ->setPrice($args['price'])
-                ->setSurface($args['surface'])
-                ->setBedRoomsCount($args['bedrooms'])
-                ->setBathRoomsCount($args['bathrooms'])
-                ->setTitle($args['title'])
-                ->setCoverImageUrl($args['room_image_url'])
-                ->setType($args['type'])
-
-        );
+        $reviews = $this->reviewService->get($args['hotelId']);
+        $hotel = parent::convertEntityFromArray( $args )
+            ->setRating( (int) $reviews['data']['rating'] )
+            ->setRatingCount( (int) $reviews['data']['count'] );
         return $hotel;
 
     }
+
 }

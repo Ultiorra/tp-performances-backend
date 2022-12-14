@@ -349,6 +349,13 @@ ALTER TABLE `rooms` ADD INDEX(`id`);
 ALTER TABLE `reviews` ADD INDEX(`id_hotel`);
 ALTER TABLE `hotels` ADD INDEX(`id`);
 ```
+
+## Question 9 : API
+**Temps de chargement de la page**
+
+| Sans API | Avec API |
+|----------|----------|
+| 2.38s    | 64s      |
 ## Question 13 : Implémentation d'un cache Redis
 
 **Temps de chargement de la page**
