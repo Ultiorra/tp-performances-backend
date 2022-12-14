@@ -156,8 +156,7 @@ class OneRequestHotelService extends AbstractHotelService{
              FROM
              tp.wp_posts AS post
              -- price
-             INNER JOIN tp.wp_postmeta AS priceData ON post.ID = priceData.post_id
-             AND priceData.meta_key = 'price'
+             INNER JOIN tp.wp_postmeta AS priceData ON post.ID = priceData.post_id AND priceData.meta_key = 'price'
              INNER JOIN wp_postmeta as surfaceData ON surfaceData.post_id = post.ID AND surfaceData.meta_key = 'surface'
              INNER JOIN wp_postmeta as roomsData ON roomsData.post_id = post.ID AND roomsData.meta_key = 'bedrooms_count'
              INNER JOIN wp_postmeta as bathRoomsData ON bathRoomsData.post_id = post.ID AND bathRoomsData.meta_key = 'bathrooms_count'
