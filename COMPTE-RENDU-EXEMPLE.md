@@ -362,9 +362,11 @@ ALTER TABLE `hotels` ADD INDEX(`id`);
 
 | Sans Cache | Avec Cache |
 |------------|------------|
-| TEMPS      | TEMPS      |
+| 64s        | 1.54s      |
 [URL pour ignorer le cache sur localhost](http://localhost?skip_cache)
 
+Je tiens a précisé que j'ai une connexion pourave (rendez moi la fibre de l'iut svp) je sais pas si ca joue ou si j'ai raté un truc au moment du passage à l'API mais quand je vois les temps éclatés au sol que j'ai ca me fait pleurer,
+cordialement.
 ## Question 14 : Compression GZIP
 
 **Comparaison des poids de fichier avec et sans compression GZIP**
