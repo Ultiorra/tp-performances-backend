@@ -373,8 +373,8 @@ cordialement.
 
 |                       | Sans  | Avec  |
 |-----------------------|-------|-------|
-| Total des fichiers JS | POIDS | POIDS |
-| `lodash.js`           | POIDS | POIDS |
+| Total des fichiers JS | 1.1mb | POIDS |
+| `lodash.js`           | 561kb | POIDS |
 
 ## Question 15 : Cache HTTP fichiers statiques
 
