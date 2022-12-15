@@ -11,7 +11,7 @@
   <title><?= $title ?? "Default " ?></title>
   
   <!-- Tailwind -->
-  <script src="/assets/scripts/tailwindcss.js"></script>
+  <script src="/assets/scripts/tailwindcss.js?v=<?= VERSION ?>"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -36,23 +36,23 @@
   </script>
   
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com?v=<?= VERSION ?>">
+  <link rel="preconnect" href="https://fonts.gstatic.com?v=<?= VERSION ?>" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@100;200;300;400;500;600;700;800&display=swap?v=<?= VERSION ?>" rel="stylesheet">
   
   <!-- Icons -->
-  <link rel="stylesheet" href="/assets/styles/iconoir.css" />
-  <link rel="stylesheet" href="/assets/styles/phosphor-icons.css" />
+  <link rel="stylesheet" href="/assets/styles/iconoir.css?v=<?= VERSION ?>" />
+  <link rel="stylesheet" href="/assets/styles/phosphor-icons.css?v=<?= VERSION ?>" />
   
   <!-- Leaflet -->
-  <link rel="stylesheet" href="/assets/styles/leaflet.css" />
-  <script src="/assets/scripts/leaflet.js"></script>
+  <link rel="stylesheet" href="/assets/styles/leaflet.css?v=<?= VERSION ?>" />
+  <script src="/assets/scripts/leaflet.js?v=<?= VERSION ?>"></script>
   
   <!-- Lodash -->
-  <script src="/assets/scripts/lodash.js"></script>
+  <script src="/assets/scripts/lodash.js?v=<?= VERSION ?>"></script>
   
   <!-- Assets -->
-  <link rel="stylesheet" href="/assets/styles/main.css" />
+  <link rel="stylesheet" href="/assets/styles/main.css?v=<?= VERSION ?>" />
   <style type="text/tailwindcss">
     @layer utilities {
       .btn {
@@ -64,6 +64,6 @@
       }
     }
   </style>
-  <script src="/assets/scripts/map.js" defer></script>
+  <script src="/assets/scripts/map.js?v=<?= VERSION ?>" defer></script>
 </head>
 <body style="font-family: 'Barlow', sans-serif">

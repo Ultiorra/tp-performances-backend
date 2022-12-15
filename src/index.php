@@ -9,7 +9,7 @@ use App\Controllers\Hotel\HotelListController;
 use App\Services\Hotel\OneRequestHotelService;
 use App\Services\Hotel\ReworkedHotelService;
 use App\Services\Hotel\UnoptimizedHotelService;
-
+define('VERSION', '1');
 require_once __DIR__ . "/vendor/autoload.php";
 
 

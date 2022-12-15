@@ -371,19 +371,20 @@ cordialement.
 
 **Comparaison des poids de fichier avec et sans compression GZIP**
 
-|                       | Sans  | Avec  |
-|-----------------------|-------|-------|
-| Total des fichiers JS | 1.1mb | POIDS |
-| `lodash.js`           | 561kb | POIDS |
+|                       | Sans  | Avec   |
+|-----------------------|-------|--------|
+| Total des fichiers JS | 1.1mb | 248kb  |
+| `lodash.js`           | 561kb | 98.5kb |
 
-sera mis a jour plus tard, je comprend pas pourquoi le poids change pas
+ca à marcher d'un coup, je crois c'est en vidant le cache de mon navigateur que ca a marché, je sais pas si c'est normal mais bon.
 
 ## Question 15 : Cache HTTP fichiers statiques
 
 **Poids transféré de la page**
 
-- **Avant** : POIDS
-- **Après** : POIDS
+- **Avant** : 97.2kb
+- **Après** : 56.5kb
+
 
 ## Question 17 : Cache NGINX
 
