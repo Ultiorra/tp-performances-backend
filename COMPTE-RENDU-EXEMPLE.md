@@ -376,6 +376,8 @@ cordialement.
 | Total des fichiers JS | 1.1mb | POIDS |
 | `lodash.js`           | 561kb | POIDS |
 
+sera mis a jour plus tard, je comprend pas pourquoi le poids change pas
+
 ## Question 15 : Cache HTTP fichiers statiques
 
 **Poids transféré de la page**
