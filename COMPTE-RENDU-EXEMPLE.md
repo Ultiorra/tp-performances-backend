@@ -395,8 +395,8 @@ ca à marcher d'un coup, je crois c'est en vidant le cache de mon navigateur que
 
 #### Que se passe-t-il si on actualise la page après avoir coupé la base de données ?
 
-REPONSE
+La page charge s'affiche toujours parfaitement.
 
 #### Pourquoi ?
 
-REPONSE
+Parce que le cache est toujours présent dans le navigateur.
